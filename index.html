@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>Rechts oder Links?</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+
+    :root {
+      --red: #e30613;
+      --dark: #171717;
+      --muted: #737373;
+      --border: #e7e7e7;
+      --bg: #fafafa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family:
+        "Nunito",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+    }
+
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: min(100%, 720px);
+      min-height: min(680px, calc(100svh - 48px));
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.07);
+
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Header */
+
+    header {
+      padding: 30px 32px 0;
+      text-align: center;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+
+      color: var(--red);
+      font-weight: 900;
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-dot {
+      width: 9px;
+      height: 9px;
+      background: var(--red);
+      border-radius: 50%;
+    }
+
+    /* Inhalt */
+
+    .content {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .result {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+
+      min-height: 300px;
+      justify-content: center;
+    }
+
+    /* Pfeil */
+
+    .arrow {
+      width: min(170px, 42vw);
+      height: min(110px, 28vw);
+
+      opacity: 0;
+      transform: translateY(10px) scale(0.96);
+
+      transition:
+        opacity 0.35s ease,
+        transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .arrow.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .arrow svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .arrow path {
+      fill: none;
+      stroke: var(--red);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Ergebnis */
+
+    .word {
+      margin: 0;
+
+      color: var(--red);
+
+      font-size: clamp(4rem, 13vw, 8.5rem);
+      line-height: 0.82;
+
+      font-weight: 900;
+      letter-spacing: -0.07em;
+
+      transform: scaleX(0.93);
+      transform-origin: center;
+
+      opacity: 0;
+
+      transition: opacity 0.3s ease;
+
+      user-select: none;
+    }
+
+    .word.visible {
+      opacity: 1;
+    }
+
+    .hint {
+      margin: 0;
+
+      color: var(--muted);
+
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    /* Button */
+
+    footer {
+      padding: 0 32px 32px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+
+      width: 100%;
+      min-height: 62px;
+
+      border-radius: 18px;
+
+      background: var(--dark);
+      color: #fff;
+
+      font: inherit;
+      font-size: 17px;
+      font-weight: 900;
+
+      cursor: pointer;
+
+      transition:
+        transform 0.15s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+      -webkit-tap-highlight-color: transparent;
+
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    button:hover {
+      background: #2b2b2b;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    button:focus-visible {
+      outline: 3px solid rgba(227, 6, 19, 0.25);
+      outline-offset: 4px;
+    }
+
+    /* Smartphone */
+
+    @media (max-width: 520px) {
+
+      body {
+        padding: 12px;
+      }
+
+      .app {
+        min-height: calc(100svh - 24px);
+        border-radius: 24px;
+      }
+
+      header {
+        padding: 24px 20px 0;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      footer {
+        padding: 0 20px 20px;
+      }
+
+      .result {
+        min-height: 260px;
+      }
+
+      button {
+        min-height: 58px;
+      }
+    }
+
+    /* Weniger Animationen, wenn vom Gerät gewünscht */
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- HEADER -->
+
+    <header>
+      <div class="brand">
+        <span class="brand-dot"></span>
+        Entscheide
+      </div>
+    </header>
+
+
+    <!-- HAUPTBEREICH -->
+
+    <section class="content" aria-live="polite">
+
+      <div class="result">
+
+        <!-- Hier wird der Pfeil eingefügt -->
+        <div
+          class="arrow"
+          id="arrow"
+          aria-hidden="true">
+        </div>
+
+        <!-- Hier steht später RECHTS oder LINKS -->
+        <h1
+          class="word"
+          id="word">
+          ?
+        </h1>
+
+        <p
+          class="hint"
+          id="hint">
+          Drücke den Button für eine Entscheidung.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- BUTTON -->
+
+    <footer>
+      <button
+        id="decide"
+        type="button">
+        Entscheidung treffen
+      </button>
+    </footer>
+
+  </main>
+
+
+  <script>
+
+    const button = document.getElementById("decide");
+    const word = document.getElementById("word");
+    const arrow = document.getElementById("arrow");
+    const hint = document.getElementById("hint");
+
+
+    /*
+      Erstellt den passenden Pfeil
+      für RECHTS oder LINKS
+    */
+
+    function createArrow(direction) {
+
+      if (direction === "rechts") {
+
+        return `
+          <svg
+            viewBox="0 0 180 110"
+            role="img"
+            aria-label="Pfeil nach rechts">
+
+            <path
+              d="M18 78
+                 C58 76, 82 65, 111 45
+                 C126 35, 141 27, 161 22">
+            </path>
+
+            <path
+              d="M137 13
+                 L162 22
+                 L148 44">
+            </path>
+
+          </svg>
+        `;
+
+      }
+
+
+      return `
+        <svg
+          viewBox="0 0 180 110"
+          role="img"
+          aria-label="Pfeil nach links">
+
+          <path
+            d="M162 78
+               C122 76, 98 65, 69 45
+               C54 35, 39 27, 19 22">
+          </path>
+
+          <path
+            d="M43 13
+               L18 22
+               L32 44">
+          </path>
+
+        </svg>
+      `;
+    }
+
+
+    /*
+      Zufällige Entscheidung
+    */
+
+    function decide() {
+
+      const direction =
+        Math.random() < 0.5
+          ? "links"
+          : "rechts";
+
+
+      /*
+        Alte Animation zurücksetzen
+      */
+
+      word.classList.remove("visible");
+      arrow.classList.remove("visible");
+
+
+      /*
+        Kurze Verzögerung für die Animation
+      */
+
+      setTimeout(() => {
+
+        word.textContent = direction;
+
+        arrow.innerHTML =
+          createArrow(direction);
+
+        hint.textContent =
+          "Die Entscheidung ist gefallen.";
+
+
+        word.classList.add("visible");
+        arrow.classList.add("visible");
+
+      }, 120);
+    }
+
+
+    /*
+      Button-Klick
+    */
+
+    button.addEventListener(
+      "click",
+      decide
+    );
+
+
+    /*
+      Enter / Leertaste
+    */
+
+    document.addEventListener(
+      "keydown",
+      (event) => {
+
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
+
+          if (
+            document.activeElement !== button
+          ) {
+            return;
+          }
+
+          event.preventDefault();
+
+          decide();
+        }
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>
